@@ -3,8 +3,6 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <errno.h>
 #include "log.h"
 
 static log_level_t current_level = LOG_LEVEL_ERROR;
@@ -29,6 +27,10 @@ log_level_t log_get_level(void)
 
 void log_output(log_level_t level, const char *fmt, ...)
 {
+    if (level < LOG_LEVEL_ERROR || level > LOG_LEVEL_DEBUG) {
+        return;
+    }
+
     if (level > current_level) {
         return;
     }

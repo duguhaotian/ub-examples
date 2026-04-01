@@ -5,7 +5,6 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <stdbool.h>
 #include <stdarg.h>
 
 #ifdef __cplusplus
