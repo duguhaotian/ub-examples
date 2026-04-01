@@ -1,0 +1,3 @@
+[submodule "obmm-lib"]
+	path = obmm-lib
+	url = https://atomgit.com/openeuler/obmm.git
