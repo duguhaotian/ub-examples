@@ -43,7 +43,12 @@ static int read_int_from_file(const char *filepath, long *value)
 
     /* Parse as integer (handles hex 0x prefix) */
     char *endptr;
+    errno = 0;
     *value = strtol(line, &endptr, 0);
+    if (errno == ERANGE) {
+        LOG_ERROR("value overflow in %s: %s", filepath, line);
+        return -ERANGE;
+    }
     if (endptr == line) {
         LOG_ERROR("invalid value in %s: %s", filepath, line);
         return -EINVAL;
@@ -59,7 +64,10 @@ int read_eid(const char *base_path, uint8_t *eid)
     }
 
     char filepath[MAX_PATH_LEN];
-    snprintf(filepath, sizeof(filepath), "%s/eid", base_path);
+    int len = snprintf(filepath, sizeof(filepath), "%s/eid", base_path);
+    if (len < 0 || len >= (int)sizeof(filepath)) {
+        return -ENAMETOOLONG;
+    }
 
     long value;
     int ret = read_int_from_file(filepath, &value);
@@ -74,7 +82,7 @@ int read_eid(const char *base_path, uint8_t *eid)
     eid[2] = (uint8_t)((value >> 16) & 0xFF);
     eid[3] = (uint8_t)((value >> 24) & 0xFF);
 
-    LOG_DEBUG("read eid from %s: " EID_FMT64, filepath, EID_ARGS64(eid));
+    LOG_DEBUG("read eid from %s: 0x%lx", filepath, value);
     return 0;
 }
 
@@ -85,7 +93,10 @@ int read_primary_cna(const char *base_path, uint32_t *cna)
     }
 
     char filepath[MAX_PATH_LEN];
-    snprintf(filepath, sizeof(filepath), "%s/primary_cna", base_path);
+    int len = snprintf(filepath, sizeof(filepath), "%s/primary_cna", base_path);
+    if (len < 0 || len >= (int)sizeof(filepath)) {
+        return -ENAMETOOLONG;
+    }
 
     long value;
     int ret = read_int_from_file(filepath, &value);
@@ -105,7 +116,10 @@ int read_numa_id(const char *base_path, int *numa)
     }
 
     char filepath[MAX_PATH_LEN];
-    snprintf(filepath, sizeof(filepath), "%s/numa_id", base_path);
+    int len = snprintf(filepath, sizeof(filepath), "%s/numa_id", base_path);
+    if (len < 0 || len >= (int)sizeof(filepath)) {
+        return -ENAMETOOLONG;
+    }
 
     long value;
     int ret = read_int_from_file(filepath, &value);
@@ -126,7 +140,10 @@ int read_ummu_map(const char *base_path, int *ummu_map)
     }
 
     char filepath[MAX_PATH_LEN];
-    snprintf(filepath, sizeof(filepath), "%s/ummu_map", base_path);
+    int len = snprintf(filepath, sizeof(filepath), "%s/ummu_map", base_path);
+    if (len < 0 || len >= (int)sizeof(filepath)) {
+        return -ENAMETOOLONG;
+    }
 
     long value;
     int ret = read_int_from_file(filepath, &value);
