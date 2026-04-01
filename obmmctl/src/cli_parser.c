@@ -10,6 +10,7 @@
 #include <errno.h>
 #include "cli_parser.h"
 #include "obmmctl.h"
+#include "log.h"
 
 /* Command definitions */
 static const char *cmd_names[] = {
@@ -238,7 +239,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
     *cmd = get_command_type(argv[1]);
 
     if (*cmd == CMD_UNKNOWN) {
-        ERR("Unknown command: %s", argv[1]);
+        LOG_ERROR("Unknown command: %s", argv[1]);
         return -1;
     }
 
@@ -271,14 +272,14 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
 
             case 'a':
                 if (parse_uint64(optarg, &opts->remote_addr) != 0) {
-                    ERR("Invalid address: %s", optarg);
+                    LOG_ERROR("Invalid address: %s", optarg);
                     return -1;
                 }
                 break;
 
             case 's':
                 if (parse_size(optarg, &opts->size) != 0) {
-                    ERR("Invalid size: %s", optarg);
+                    LOG_ERROR("Invalid size: %s", optarg);
                     return -1;
                 }
                 break;
@@ -289,7 +290,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
                     errno = 0;
                     unsigned long flags_val = strtoul(optarg, &endptr, 0);
                     if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
-                        ERR("Invalid flags: %s", optarg);
+                        LOG_ERROR("Invalid flags: %s", optarg);
                         return -1;
                     }
                     opts->flags = (uint32_t)flags_val;
@@ -302,7 +303,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
                     errno = 0;
                     unsigned long long mem_id_val = strtoull(optarg, &endptr, 0);
                     if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
-                        ERR("Invalid mem_id: %s", optarg);
+                        LOG_ERROR("Invalid mem_id: %s", optarg);
                         return -1;
                     }
                     opts->mem_id = mem_id_val;
@@ -315,7 +316,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
                     errno = 0;
                     long node_val = strtol(optarg, &endptr, 0);
                     if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
-                        ERR("Invalid node_id: %s", optarg);
+                        LOG_ERROR("Invalid node_id: %s", optarg);
                         return -1;
                     }
                     opts->node_id = (int)node_val;

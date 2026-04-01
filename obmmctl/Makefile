@@ -27,6 +27,17 @@ MAIN_SRCS = $(SRC_DIR)/main.c \
             $(SRC_DIR)/cmd_status.c \
             $(SRC_DIR)/cmd_help.c
 
+# Source files for test build (excludes main.c)
+LIB_SRCS = $(SRC_DIR)/cli_parser.c \
+           $(SRC_DIR)/log.c \
+           $(SRC_DIR)/sysfs_reader.c \
+           $(SRC_DIR)/libobmm_wrap.c \
+           $(SRC_DIR)/cmd_lend.c \
+           $(SRC_DIR)/cmd_borrow.c \
+           $(SRC_DIR)/cmd_owner.c \
+           $(SRC_DIR)/cmd_status.c \
+           $(SRC_DIR)/cmd_help.c
+
 STUB_SRCS = $(STUB_DIR)/libobmm_stubs.c
 
 TEST_SRCS = $(TEST_DIR)/test_runner.c \
@@ -36,6 +47,7 @@ TEST_SRCS = $(TEST_DIR)/test_runner.c \
 
 # Object files
 MAIN_OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(MAIN_SRCS)))
+LIB_OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(LIB_SRCS)))
 STUB_OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(STUB_SRCS)))
 TEST_OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(TEST_SRCS)))
 
@@ -59,14 +71,14 @@ directories:
 $(TARGET): $(MAIN_OBJS)
 	$(CC) $(CFLAGS_PROD) -o $@ $^ -lobmm
 
-# Test build with stubs
-$(TEST_TARGET): $(TEST_OBJS) $(STUB_OBJS) $(MAIN_OBJS)
+# Test build with stubs (excludes main.o)
+$(TEST_TARGET): $(TEST_OBJS) $(STUB_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS_TEST) -o $@ $^
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS_TEST) -c $< -o $@
 
-test: $(TEST_TARGET)
+test: directories $(TEST_TARGET)
 	./$(TEST_TARGET)
 
 clean:

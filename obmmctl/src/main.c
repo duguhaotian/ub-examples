@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     cmd_type_t cmd_type = get_command_type(argv[1]);
 
     if (cmd_type == CMD_UNKNOWN) {
-        ERR("Unknown command: %s", argv[1]);
+        LOG_ERROR("Unknown command: %s", argv[1]);
         fprintf(stderr, "\n");
         print_general_usage(argv[0]);
         return EXIT_COMMAND_NOT_FOUND;
@@ -79,6 +79,6 @@ int main(int argc, char **argv)
     }
 
     /* Should never reach here */
-    ERR("Internal error: command handler not found");
+    LOG_ERROR("Internal error: command handler not found");
     return EXIT_FAILURE_CODE;
 }
