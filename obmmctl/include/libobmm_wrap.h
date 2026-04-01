@@ -52,7 +52,7 @@ int obmm_do_unlend(mem_id id, unsigned long flags);
 int obmm_do_unborrow(mem_id id, unsigned long flags);
 
 /* Query status */
-int obmm_query_status(mem_id id, obmm_desc_t *desc);
+int obmm_query_mem_status(mem_id id, obmm_desc_t *desc);
 
 /* Cleanup handle */
 void obmm_handle_cleanup(obmm_handle_t *handle);

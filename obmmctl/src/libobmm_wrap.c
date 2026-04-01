@@ -142,7 +142,7 @@ int obmm_do_unborrow(mem_id id, unsigned long flags)
     return 0;
 }
 
-int obmm_query_status(mem_id id, obmm_desc_t *desc)
+int obmm_query_mem_status(mem_id id, obmm_desc_t *desc)
 {
     if (id == OBMM_INVALID_MEMID || !desc) {
         return -EINVAL;
