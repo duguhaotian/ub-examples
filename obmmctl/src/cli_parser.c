@@ -44,8 +44,19 @@ int parse_size(const char *str, size_t *size)
         return -1;
     }
 
+    /* Check for negative sign - size shouldn't be negative */
+    if (*str == '-') {
+        return -1;
+    }
+
     char *endptr;
+    errno = 0;
     unsigned long val = strtoul(str, &endptr, 0);
+
+    /* Check for overflow */
+    if (errno == ERANGE) {
+        return -1;
+    }
 
     if (endptr == str) {
         return -1;  /* No conversion performed */
@@ -260,7 +271,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
 
             case 'a':
                 if (parse_uint64(optarg, &opts->remote_addr) != 0) {
-                    fprintf(stderr, "Error: Invalid address: %s\n", optarg);
+                    ERR("Invalid address: %s", optarg);
                     return -1;
                 }
                 break;
@@ -273,15 +284,42 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
                 break;
 
             case 'f':
-                opts->flags = (uint32_t)strtoul(optarg, NULL, 0);
+                {
+                    char *endptr;
+                    errno = 0;
+                    unsigned long flags_val = strtoul(optarg, &endptr, 0);
+                    if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
+                        ERR("Invalid flags: %s", optarg);
+                        return -1;
+                    }
+                    opts->flags = (uint32_t)flags_val;
+                }
                 break;
 
             case 'i':
-                opts->mem_id = strtoull(optarg, NULL, 0);
+                {
+                    char *endptr;
+                    errno = 0;
+                    unsigned long long mem_id_val = strtoull(optarg, &endptr, 0);
+                    if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
+                        ERR("Invalid mem_id: %s", optarg);
+                        return -1;
+                    }
+                    opts->mem_id = mem_id_val;
+                }
                 break;
 
             case 'n':
-                opts->node_id = (int)strtol(optarg, NULL, 0);
+                {
+                    char *endptr;
+                    errno = 0;
+                    long node_val = strtol(optarg, &endptr, 0);
+                    if (errno == ERANGE || endptr == optarg || *endptr != '\0') {
+                        ERR("Invalid node_id: %s", optarg);
+                        return -1;
+                    }
+                    opts->node_id = (int)node_val;
+                }
                 break;
 
             case 'h':
