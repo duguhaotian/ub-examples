@@ -64,7 +64,7 @@ int cmd_lend(int argc, char **argv)
     /* Output key information */
     printf("mem_id: %lu\n", (unsigned long)handle.id);
     printf("addr: 0x%lx\n", (unsigned long)handle.desc.addr);
-    printf("size: %zu\n", handle.desc.size);
+    printf("size: %zu\n", handle.desc.length);
 
     /* Prevent auto cleanup - caller responsible for unlend */
     handle.initialized = false;

@@ -75,6 +75,7 @@ TEST(do_lend_success)
     ASSERT(handle.is_export == true);
     ASSERT(handle.id != OBMM_INVALID_MEMID);
     ASSERT(handle.desc.addr != 0);  /* Kernel allocated address */
+    ASSERT(handle.desc.length == 2 * 1024 * 1024);
 
     cleanup_mock_sysfs(mock_path);
 }
@@ -104,12 +105,13 @@ TEST(do_borrow_success)
     obmm_handle_t handle;
     uint64_t remote_addr = 0x100000000ULL;
     int ret = obmm_do_borrow(&ctrl, remote_addr, 2 * 1024 * 1024,
-                              OBMM_IMPORT_FLAG_ALLOW_MMAP, &handle);
+                              OBMM_IMPORT_FLAG_ALLOW_MMAP, 0, NULL, &handle);
 
     ASSERT(ret == 0);
     ASSERT(handle.initialized == true);
     ASSERT(handle.is_export == false);
     ASSERT(handle.id != OBMM_INVALID_MEMID);
+    ASSERT(handle.desc.length == 2 * 1024 * 1024);
 
     cleanup_mock_sysfs(mock_path);
 }
@@ -139,12 +141,21 @@ TEST(do_unborrow_success)
 
     obmm_handle_t handle;
     obmm_do_borrow(&ctrl, 0x100000000ULL, 2 * 1024 * 1024,
-                   OBMM_IMPORT_FLAG_ALLOW_MMAP, &handle);
+                   OBMM_IMPORT_FLAG_ALLOW_MMAP, 0, NULL, &handle);
 
     int ret = obmm_do_unborrow(handle.id, 0);
     ASSERT(ret == 0);
 
     cleanup_mock_sysfs(mock_path);
+}
+
+TEST(query_pa_success)
+{
+    unsigned long pa;
+    int ret = obmm_query_pa(1000, 0, &pa);
+
+    ASSERT(ret == 0);
+    ASSERT(pa != 0);
 }
 
 int run_libobmm_wrap_tests(void)
@@ -157,6 +168,7 @@ int run_libobmm_wrap_tests(void)
     test_do_borrow_success();
     test_do_unlend_success();
     test_do_unborrow_success();
+    test_query_pa_success();
 
     printf("libobmm_wrap tests: %d passed, %d failed\n", tests_passed, tests_failed);
     return tests_failed > 0 ? 1 : 0;

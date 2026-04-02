@@ -10,6 +10,7 @@
 #include "log.h"
 
 #define DEFAULT_FLAGS OBMM_IMPORT_FLAG_ALLOW_MMAP
+#define DEFAULT_BASE_DIST 0
 
 int cmd_borrow(int argc, char **argv)
 {
@@ -50,6 +51,8 @@ int cmd_borrow(int argc, char **argv)
     }
 
     unsigned long flags = opts.flags > 0 ? opts.flags : DEFAULT_FLAGS;
+    int base_dist = DEFAULT_BASE_DIST;
+    int *numa_ptr = NULL;  /* NULL means we don't care about numa assignment */
 
     LOG_INFO("Reading controller info from %s", opts.controller_path);
 
@@ -63,7 +66,7 @@ int cmd_borrow(int argc, char **argv)
 
     /* Perform borrow operation */
     obmm_handle_t handle;
-    ret = obmm_do_borrow(&ctrl, opts.remote_addr, opts.size, flags, &handle);
+    ret = obmm_do_borrow(&ctrl, opts.remote_addr, opts.size, flags, base_dist, numa_ptr, &handle);
     if (ret != 0) {
         LOG_ERROR("Borrow operation failed");
         return EXIT_OBMM_ERROR;
@@ -71,7 +74,7 @@ int cmd_borrow(int argc, char **argv)
 
     /* Output key information */
     printf("mem_id: %lu\n", (unsigned long)handle.id);
-    printf("size: %zu\n", handle.desc.size);
+    printf("size: %zu\n", handle.desc.length);
 
     /* Prevent auto cleanup */
     handle.initialized = false;

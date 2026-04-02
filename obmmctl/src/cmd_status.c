@@ -32,10 +32,9 @@ int cmd_status(int argc, char **argv)
 
     /* If mem_id specified, show specific status */
     if (opts.mem_id != 0) {
-        obmm_desc_t desc;
-        memset(&desc, 0, sizeof(desc));
+        unsigned long pa;
+        int ret = obmm_query_pa((mem_id)opts.mem_id, 0, &pa);
 
-        int ret = obmm_query_mem_status((mem_id)opts.mem_id, &desc);
         if (ret != 0) {
             LOG_ERROR("Failed to query status for mem_id %lu",
                       (unsigned long)opts.mem_id);
@@ -44,9 +43,7 @@ int cmd_status(int argc, char **argv)
 
         printf("Memory Region Status:\n");
         printf("  mem_id:  %lu\n", (unsigned long)opts.mem_id);
-        printf("  addr:    0x%lx\n", (unsigned long)desc.addr);
-        printf("  size:    %zu bytes (%.2f MB)\n", desc.size, desc.size / (1024.0 * 1024.0));
-        printf("  flags:   0x%lx\n", desc.flags);
+        printf("  pa:      0x%lx (at offset 0)\n", pa);
     } else {
         /* Show general status */
         printf("OBMM Status:\n");

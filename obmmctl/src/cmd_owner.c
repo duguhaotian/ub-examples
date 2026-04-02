@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <sys/mman.h>
 #include "obmmctl.h"
 #include "cli_parser.h"
 #include "libobmm_wrap.h"
@@ -55,8 +57,14 @@ int cmd_set_owner(int argc, char **argv)
         return EXIT_OBMM_ERROR;
     }
 
-    /* Call obmm_set_ownership - using whole range */
-    int ret = obmm_set_ownership(fd, 0, UINT64_MAX, opts.node_id);
+    /* Call obmm_set_ownership - using whole range
+     * Note: node_id is used as prot value (PROT_NONE=0, PROT_READ=1, PROT_WRITE=2)
+     * This is a simplified interpretation for the stub mode.
+     */
+    void *start = NULL;
+    void *end = (void *)(uintptr_t)UINT64_MAX;
+    int prot = opts.node_id;  /* Map node_id to prot for stub compatibility */
+    int ret = obmm_set_ownership(fd, start, end, prot);
     close(fd);
 
     if (ret != 0) {
