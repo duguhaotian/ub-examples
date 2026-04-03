@@ -46,7 +46,9 @@ int cmd_borrow(int argc, char **argv)
         return EXIT_USAGE_ERROR;
     }
 
-    if (opts.verbose) {
+    if (opts.verbose_count >= 2) {
+        log_set_level(LOG_LEVEL_DEBUG);
+    } else if (opts.verbose_count >= 1) {
         log_set_level(LOG_LEVEL_INFO);
     }
 
@@ -103,7 +105,9 @@ int cmd_unborrow(int argc, char **argv)
         return EXIT_USAGE_ERROR;
     }
 
-    if (opts.verbose) {
+    if (opts.verbose_count >= 2) {
+        log_set_level(LOG_LEVEL_DEBUG);
+    } else if (opts.verbose_count >= 1) {
         log_set_level(LOG_LEVEL_INFO);
     }
 

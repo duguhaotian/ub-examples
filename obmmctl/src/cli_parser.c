@@ -34,7 +34,7 @@ void cmd_options_init(cmd_options_t *opts)
         opts->mem_id = 0;
         opts->node_id = 0;
         opts->show_help = false;
-        opts->verbose = false;
+        opts->verbose_count = 0;
     }
 }
 
@@ -147,7 +147,7 @@ void print_general_usage(const char *program)
     printf("\nUse '%s help <command>' for command-specific help\n", program ? program : OBMCTL_NAME);
     printf("\nOptions:\n");
     printf("  -h, --help      Show this help message\n");
-    printf("  -v, --verbose   Verbose output\n");
+    printf("  -v, --verbose   Verbose output (repeat for more: -v=INFO, -vv=DEBUG)\n");
 }
 
 /* Print command-specific help */
@@ -328,7 +328,7 @@ int parse_args(int argc, char **argv, cmd_type_t *cmd, cmd_options_t *opts)
                 break;
 
             case 'v':
-                opts->verbose = true;
+                opts->verbose_count++;
                 break;
 
             case '?':

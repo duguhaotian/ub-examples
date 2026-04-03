@@ -116,7 +116,7 @@ int read_numa_id(const char *base_path, int *numa)
     }
 
     char filepath[MAX_PATH_LEN];
-    int len = snprintf(filepath, sizeof(filepath), "%s/numa_id", base_path);
+    int len = snprintf(filepath, sizeof(filepath), "%s/numa", base_path);
     if (len < 0 || len >= (int)sizeof(filepath)) {
         return -ENAMETOOLONG;
     }

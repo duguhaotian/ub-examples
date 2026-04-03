@@ -35,7 +35,7 @@ typedef struct {
     uint64_t mem_id;        /* Memory ID */
     int node_id;            /* Target node ID */
     bool show_help;         /* Show help flag */
-    bool verbose;           /* Verbose output */
+    int verbose_count;      /* Verbose level: 0=ERROR, 1=INFO, 2+=DEBUG */
 } cmd_options_t;
 
 /* Function declarations */

@@ -37,7 +37,7 @@ int test_cli_parser(void)
         TEST_ASSERT(opts.mem_id == 0, "mem_id should be 0 after init");
         TEST_ASSERT(opts.node_id == 0, "node_id should be 0 after init");
         TEST_ASSERT(opts.show_help == false, "show_help should be false after init");
-        TEST_ASSERT(opts.verbose == false, "verbose should be false after init");
+        TEST_ASSERT(opts.verbose_count == 0, "verbose_count should be 0 after init");
     }
 
     /* Test 2: parse_size - basic values */
@@ -123,6 +123,38 @@ int test_cli_parser(void)
         TEST_ASSERT(opts.mem_id == 12345, "mem_id should be 12345");
         TEST_ASSERT(opts.node_id == 1, "node_id should be 1");
     }
+
+    printf("(%d tests)", test_count);
+    return fail_count > 0 ? 1 : 0;
+}
+
+int test_verbose_counting(void)
+{
+    test_count = 0;
+    fail_count = 0;
+
+    cmd_type_t cmd;
+    cmd_options_t opts;
+
+    // Test single -v
+    char *args1[] = { "obmmctl", "lend", "-v", "--eid", "/sys/devices/ub_bus_controller0/0" };
+    int ret = parse_args(5, args1, &cmd, &opts);
+    TEST_ASSERT(ret == 0, "parse_args with -v should succeed");
+    TEST_ASSERT(opts.verbose_count == 1, "single -v should set verbose_count to 1");
+
+    // Test double -vv
+    cmd_options_init(&opts);
+    char *args2[] = { "obmmctl", "lend", "-v", "-v", "--eid", "/sys/devices/ub_bus_controller0/0" };
+    ret = parse_args(6, args2, &cmd, &opts);
+    TEST_ASSERT(ret == 0, "parse_args with -vv should succeed");
+    TEST_ASSERT(opts.verbose_count == 2, "-vv should set verbose_count to 2");
+
+    // Test --verbose --verbose
+    cmd_options_init(&opts);
+    char *args3[] = { "obmmctl", "lend", "--verbose", "--verbose", "--eid", "/sys/devices/ub_bus_controller0/0" };
+    ret = parse_args(6, args3, &cmd, &opts);
+    TEST_ASSERT(ret == 0, "parse_args with --verbose --verbose should succeed");
+    TEST_ASSERT(opts.verbose_count == 2, "double --verbose should set verbose_count to 2");
 
     printf("(%d tests)", test_count);
     return fail_count > 0 ? 1 : 0;
